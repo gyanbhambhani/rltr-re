@@ -1,16 +1,21 @@
-# FlipFund - Real Estate Crowdfunding Platform
+# RLTR - AI-Native Infrastructure Platform for Real Estate
 
-FlipFund is a modern crowdfunding platform that connects real estate flippers with investors. Built with Next.js 14, TypeScript, Tailwind CSS, and Framer Motion, it provides a seamless experience for both property flippers and investors.
+RLTR is an AI-native infrastructure platform built to modernize how real estate agents operate. Today's brokerage ecosystem is fragmented—agents juggle half a dozen tools to search the MLS, draft contracts, manage transactions, and communicate with clients. RLTR eliminates that fragmentation by unifying everything into one intelligent operating system. It doesn't just digitize the old workflow—it redefines it through automation, semantic understanding, and integrated AI reasoning.
 
-## Features
+## Core Modules
 
-- 🏠 Property Listings: Browse and invest in carefully vetted real estate opportunities
-- 💰 Investment Tracking: Monitor your investments and returns in real-time
-- 📊 Analytics Dashboard: Track performance metrics and portfolio growth
-- 🔐 Secure Authentication: Built-in user authentication and role-based access
-- 💳 Payment Processing: Integrated with Stripe for secure transactions
-- 🎨 Modern UI: Beautiful, responsive design with smooth animations
-- 📱 Mobile-First: Optimized for all devices and screen sizes
+### MLS Agent
+The MLS Agent serves as a smarter, faster wrapper around traditional MLS systems, letting agents query listings in natural language and receive intelligent insights—like comps, pricing anomalies, or recommendations tailored to a client's profile.
+
+### Legal Agent
+The Legal Agent acts as an AI transaction coordinator, automatically drafting contracts, connecting to DocuSign or Glide for e-signatures, and handling checklist tasks like escrow, inspection, and appraisal scheduling.
+
+### Custom Agent (Coming Soon)
+A drag-and-drop workflow builder where agents can create automations for their own business logic—sending comps to clients, scheduling showings, or triggering offers based on market updates. The system uses a Model Context Protocol (MCP) layer to let agents interact with AI workflows directly, turning everyday actions into reusable automations.
+
+## Mission
+
+RLTR's mission is simple: to make real estate operations intelligent, efficient, and beautifully integrated—so agents spend time building relationships, not managing software.
 
 ## Tech Stack
 
@@ -20,7 +25,6 @@ FlipFund is a modern crowdfunding platform that connects real estate flippers wi
 - **Animations:** Framer Motion
 - **Authentication:** Supabase Auth
 - **Database:** Supabase
-- **Payments:** Stripe
 - **Forms:** React Hook Form with Zod validation
 - **Icons:** React Icons
 
@@ -28,8 +32,8 @@ FlipFund is a modern crowdfunding platform that connects real estate flippers wi
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/flipfund.git
-   cd flipfund
+   git clone https://github.com/yourusername/rltr.git
+   cd rltr
    ```
 
 2. Install dependencies:
@@ -42,8 +46,6 @@ FlipFund is a modern crowdfunding platform that connects real estate flippers wi
    ```
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   STRIPE_SECRET_KEY=your_stripe_secret_key
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
    ```
 
 4. Run the development server:
@@ -78,9 +80,3 @@ src/
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Design inspired by Hunter.io and Apple.com
-- Icons from React Icons
-- UI components built with Tailwind CSS

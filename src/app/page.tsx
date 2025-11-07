@@ -1,121 +1,115 @@
-"use client";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { FaHome, FaChartLine, FaUsers } from "react-icons/fa";
-
-const features = [
-  {
-    icon: FaHome,
-    title: "Property Listings",
-    description: "Browse through carefully vetted real estate opportunities ready for investment.",
-  },
-  {
-    icon: FaChartLine,
-    title: "Smart Investment",
-    description: "Track your investments and monitor returns with our intuitive dashboard.",
-  },
-  {
-    icon: FaUsers,
-    title: "Community Driven",
-    description: "Join a community of investors and property flippers working together.",
-  },
-];
-
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-background py-20 sm:py-32">
-        <div className="container relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mx-auto max-w-2xl text-center"
+    <main className="min-h-screen bg-neutral-50 text-neutral-900 antialiased">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-neutral-200">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="text-xl font-semibold tracking-tight">RLTR</div>
+          <a 
+            href="mailto:hello@rltr.com" 
+            className="text-sm hover:text-neutral-600 transition-colors"
           >
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl gradient-text">
-              Revolutionize Real Estate Investment
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              Join the future of property investment. Fund real estate flips or list your properties.
-              Together, we're building wealth through smart real estate investments.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button size="lg" asChild>
-                <Link href="/register">Get Started</Link>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/how-it-works">Learn More</Link>
-              </Button>
-            </div>
-          </motion.div>
+            Get in touch
+          </a>
         </div>
-        
-        {/* Background Gradient */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-primary/10 to-background" />
-      </section>
+      </header>
 
-      {/* Features Section */}
-      <section className="py-24 sm:py-32">
-        <div className="container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mx-auto max-w-2xl text-center"
-          >
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Why Choose FlipFund?
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              We're making real estate investment accessible, transparent, and profitable for everyone.
+      {/* Main Content */}
+      <article className="max-w-4xl mx-auto px-6 pt-32 pb-24">
+        {/* Title Section */}
+        <header className="mb-20">
+          <h1 className="text-5xl md:text-7xl font-light tracking-tight leading-[1.1] mb-6">
+            A Letter to<br />Real Estate
+          </h1>
+          <time className="text-sm text-neutral-500 tracking-wide">November 2025</time>
+        </header>
+
+        {/* Body */}
+        <div className="space-y-8 text-xl md:text-2xl font-light leading-relaxed text-neutral-700">
+          <p className="text-neutral-900">
+            Real estate agents spend more time managing software than serving clients.
+          </p>
+
+          <p>
+            Six different tools. Six logins. Six workflows that don't talk to each other.
+            MLS for searching. DocuSign for contracts. Email for communication. 
+            Spreadsheets for tracking. Calendar for scheduling. CRM for follow-ups.
+          </p>
+
+          <p className="text-neutral-900 font-normal">
+            This isn't innovation. This is fragmentation dressed up as progress.
+          </p>
+
+          <div className="h-16" />
+
+          <p>
+            We built RLTR because we believe real estate deserves better. 
+            Not another tool to add to the stack. Not another dashboard to check. 
+            Not another login to remember.
+          </p>
+
+          <p className="text-neutral-900">
+            One intelligent operating system. Everything you need, nothing you don't. 
+            AI that understands context, not just commands. Workflows that adapt to you, 
+            not the other way around.
+          </p>
+
+          <p>
+            Search the MLS in plain language. Draft contracts automatically. 
+            Coordinate transactions seamlessly. Build custom automations without code. 
+            All in one place.
+          </p>
+
+          <div className="h-16" />
+
+          <p className="text-neutral-900 font-normal">
+            This is what modern real estate infrastructure should look like. 
+            Unified. Intelligent. Effortless.
+          </p>
+
+          <p className="text-2xl md:text-3xl">
+            The future of real estate isn't about more tools. 
+            It's about better systems.
+          </p>
+
+          <div className="h-24" />
+
+          <div className="flex items-center justify-between border-t border-neutral-200 pt-12">
+            <p className="text-2xl font-normal text-neutral-900">
+              RLTR
             </p>
-          </motion.div>
-
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex flex-col"
-                >
-                  <dt className="flex items-center gap-x-3 text-base font-semibold leading-7">
-                    <feature.icon className="h-5 w-5 flex-none text-primary" />
-                    {feature.title}
-                  </dt>
-                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
-                    <p className="flex-auto">{feature.description}</p>
-                  </dd>
-                </motion.div>
-              ))}
-            </dl>
+            <a 
+              href="mailto:hello@rltr.com"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-neutral-900 text-white text-base font-medium hover:bg-neutral-800 transition-colors"
+            >
+              Get Started
+            </a>
           </div>
         </div>
-      </section>
+      </article>
 
-      {/* CTA Section */}
-      <section className="relative isolate overflow-hidden bg-primary px-6 py-24 text-center shadow-2xl sm:rounded-3xl sm:px-16">
-        <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
-          Ready to Start Your Investment Journey?
-        </h2>
-        <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-foreground/90">
-          Join thousands of investors who are already building wealth through FlipFund.
-        </p>
-        <div className="mt-10 flex items-center justify-center gap-x-6">
-          <Button size="lg" variant="secondary" asChild>
-            <Link href="/register">Get Started Now</Link>
-          </Button>
-          <Button size="lg" variant="ghost" className="text-white" asChild>
-            <Link href="/contact">Contact Sales</Link>
-          </Button>
+      {/* Footer */}
+      <footer className="border-t border-neutral-200 bg-white">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="text-sm text-neutral-500">
+              © 2025 RLTR. AI-Native Infrastructure for Real Estate.
+            </div>
+            <div className="flex gap-8 text-sm">
+              <a href="mailto:hello@rltr.com" className="hover:text-neutral-900 transition-colors">
+                Contact
+              </a>
+              <a href="#" className="hover:text-neutral-900 transition-colors">
+                Privacy
+              </a>
+              <a href="#" className="hover:text-neutral-900 transition-colors">
+                Terms
+              </a>
+            </div>
+          </div>
         </div>
-      </section>
-    </div>
+      </footer>
+    </main>
   );
 }
+
