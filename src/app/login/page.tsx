@@ -1,7 +1,26 @@
+'use client'
+
 import Link from 'next/link';
+import { useState } from 'react';
 import Navigation from '../components/Navigation';
+import { login } from '../actions/auth';
 
 export default function Login() {
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(formData: FormData) {
+    setLoading(true);
+    setError(null);
+    
+    const result = await login(formData);
+    
+    if (result?.error) {
+      setError(result.error);
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-white antialiased">
       <Navigation />
@@ -12,7 +31,13 @@ export default function Login() {
           <h1 className="text-3xl font-medium tracking-tight mb-2 text-black">Sign in</h1>
           <p className="text-black/60 mb-8">Welcome back</p>
           
-          <form className="space-y-5">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+          
+          <form action={handleSubmit} className="space-y-5">
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-2 text-black/80">
                 Email
@@ -24,6 +49,7 @@ export default function Login() {
                 className="w-full px-4 py-2.5 border border-black/10 bg-white text-black 
                 focus:outline-none focus:border-black/30 transition-colors"
                 required
+                disabled={loading}
               />
             </div>
             
@@ -38,15 +64,17 @@ export default function Login() {
                 className="w-full px-4 py-2.5 border border-black/10 bg-white text-black 
                 focus:outline-none focus:border-black/30 transition-colors"
                 required
+                disabled={loading}
               />
             </div>
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full px-5 py-2.5 bg-black text-white text-sm font-medium 
-              hover:bg-black/80 transition-colors"
+              hover:bg-black/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
 
