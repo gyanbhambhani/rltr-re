@@ -9,6 +9,23 @@
 }
 
 @layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
   .gradient-mesh {
     background: linear-gradient(135deg, rgba(115,115,115,0.15) 0%, rgba(163,163,163,0.12) 25%, rgba(212,212,212,0.08) 50%, rgba(229,229,229,0.05) 75%, transparent 100%);
     background-size: 400% 400%;
