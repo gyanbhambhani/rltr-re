@@ -51,7 +51,10 @@ export default function Navigation() {
           : 'max-w-6xl bg-transparent px-0 py-0'
       }`}>
         <div className="flex items-center justify-between">
-          <Link href="/" className="text-base font-semibold text-black">
+          <Link 
+            href={user ? "/dashboard" : "/"} 
+            className="text-base font-semibold text-black"
+          >
             RLTR
           </Link>
           <div className="flex items-center gap-6">
