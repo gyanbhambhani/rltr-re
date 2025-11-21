@@ -9,8 +9,13 @@ export default function SignUp() {
       {/* Sign Up Form */}
       <section className="min-h-screen flex items-center justify-center px-6 pt-20">
         <div className="w-full max-w-sm">
-          <h1 className="text-3xl font-medium tracking-tight mb-2 text-black">Get started</h1>
-          <p className="text-black/60 mb-8">Create your account</p>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full 
+          bg-emerald-500/10 border border-emerald-500/20 mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="text-xs font-medium text-emerald-700">Pilot Q1 2026</span>
+          </div>
+          <h1 className="text-3xl font-medium tracking-tight mb-2 text-black">Join the pilot</h1>
+          <p className="text-black/60 mb-8">Apply for early access</p>
           
           <form className="space-y-5">
             <div>
@@ -60,7 +65,7 @@ export default function SignUp() {
               className="w-full px-5 py-2.5 bg-black text-white text-sm font-medium 
               hover:bg-black/80 transition-colors"
             >
-              Create account
+              Apply for pilot
             </button>
           </form>
 
