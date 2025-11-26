@@ -28,7 +28,9 @@ export default async function ContactsPage() {
         description="Manage your contacts and clients"
         action={
           <div className="flex gap-2">
-            <Button variant="outline">Import CSV</Button>
+            <Button variant="outline" disabled>
+              Import CSV
+            </Button>
             <Link href="/contacts/new">
               <Button>New Contact</Button>
             </Link>

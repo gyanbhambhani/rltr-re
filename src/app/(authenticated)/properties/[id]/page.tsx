@@ -51,7 +51,9 @@ export default async function PropertyDetailPage({
         title={property.address}
         description={`${property.city}, ${property.state} ${property.zip}`}
         action={
-          <Button variant="outline">Edit Property</Button>
+          <Button variant="outline" disabled>
+            Edit Property
+          </Button>
         }
       />
 
