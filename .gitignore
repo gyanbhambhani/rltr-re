@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+.yarn/install-state.gz
 
 # testing
 /coverage
@@ -35,5 +36,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# service account credentials
-flipmyfund.json
+# supabase
+.branches
+.temp
+supabase/.branches
+supabase/.temp
