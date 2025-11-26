@@ -36,8 +36,8 @@ CREATE INDEX IF NOT EXISTS idx_transaction_documents_embedding
 DROP FUNCTION IF EXISTS match_contacts(vector, integer, uuid);
 CREATE OR REPLACE FUNCTION match_contacts(
   query_embedding vector(1536),
-  match_count integer DEFAULT 10,
-  target_user_id uuid
+  target_user_id uuid,
+  match_count integer DEFAULT 10
 )
 RETURNS TABLE (
   id uuid,
@@ -67,8 +67,8 @@ $$ LANGUAGE sql STABLE;
 DROP FUNCTION IF EXISTS match_properties(vector, integer, uuid);
 CREATE OR REPLACE FUNCTION match_properties(
   query_embedding vector(1536),
-  match_count integer DEFAULT 10,
-  target_user_id uuid
+  target_user_id uuid,
+  match_count integer DEFAULT 10
 )
 RETURNS TABLE (
   id uuid,
@@ -102,8 +102,8 @@ $$ LANGUAGE sql STABLE;
 DROP FUNCTION IF EXISTS match_transactions(vector, integer, uuid);
 CREATE OR REPLACE FUNCTION match_transactions(
   query_embedding vector(1536),
-  match_count integer DEFAULT 10,
-  target_user_id uuid
+  target_user_id uuid,
+  match_count integer DEFAULT 10
 )
 RETURNS TABLE (
   id uuid,
@@ -150,8 +150,8 @@ $$ LANGUAGE sql STABLE;
 DROP FUNCTION IF EXISTS match_transaction_documents(vector, integer, uuid);
 CREATE OR REPLACE FUNCTION match_transaction_documents(
   query_embedding vector(1536),
-  match_count integer DEFAULT 10,
-  target_user_id uuid
+  target_user_id uuid,
+  match_count integer DEFAULT 10
 )
 RETURNS TABLE (
   id uuid,
