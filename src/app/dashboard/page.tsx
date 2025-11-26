@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 const styles = `
 :root {
@@ -1317,12 +1318,12 @@ interface Contract {
   title: string;
   status: 'Draft' | 'Sent' | 'Signed';
   lastUpdated: string;
-  content: React.ReactNode;
+  content: string;
   checklist: ChecklistItem[];
 }
 
 interface Property {
-  id: number;
+  id: string;
   price: string;
   address: string;
   beds: number;
@@ -1443,19 +1444,33 @@ const Sidebar: React.FC<SidebarProps> = ({ activeItem, onNavigate }) => {
   );
 };
 
-const SearchAgentView: React.FC = () => {
+const SearchAgentView: React.FC<{ user: any }> = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [properties, setProperties] = useState<Property[]>([]);
   
-  const allProperties: Property[] = [
-    { id: 1, price: '$895,000', address: '1234 Coast Hwy, Encinitas, CA', beds: 3, baths: 2, sqft: '1,450', daysOnMarket: 4, matchScore: 85, aiTag: 'Best match for Sarah K. (85%)' },
-    { id: 2, price: '$1,250,000', address: '567 Neptune Ave, Encinitas, CA', beds: 4, baths: 3, sqft: '2,100', daysOnMarket: 12, matchScore: 82, aiTag: 'High rental potential' },
-    { id: 3, price: '$750,000', address: '890 Vulcan Ave, Encinitas, CA', beds: 2, baths: 2, sqft: '1,100', daysOnMarket: 2, matchScore: 78, aiTag: 'Under market value' },
-    { id: 4, price: '$925,000', address: '432 2nd St, Encinitas, CA', beds: 3, baths: 2.5, sqft: '1,600', daysOnMarket: 8, matchScore: 75, aiTag: 'Great school district' },
-    { id: 5, price: '$1,100,000', address: '765 Hygeia Ave, Encinitas, CA', beds: 4, baths: 3, sqft: '1,950', daysOnMarket: 15, matchScore: 70, aiTag: 'Large lot size' },
-    { id: 6, price: '$825,000', address: '321 Hermes Ave, Encinitas, CA', beds: 3, baths: 2, sqft: '1,350', daysOnMarket: 6, matchScore: 65, aiTag: 'Fixer upper opportunity' },
-  ];
+  React.useEffect(() => {
+    if (!user) return;
+    const fetchProperties = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.from('properties').select('*');
+      if (data) {
+        setProperties(data.map((p: any) => ({
+          id: p.id,
+          price: p.price,
+          address: p.address,
+          beds: p.beds,
+          baths: p.baths,
+          sqft: p.sqft,
+          daysOnMarket: p.days_on_market,
+          matchScore: p.match_score,
+          aiTag: p.ai_tag
+        })));
+      }
+    };
+    fetchProperties();
+  }, [user]);
 
-  const filteredProperties = allProperties.filter(p => 
+  const filteredProperties = properties.filter(p => 
     p.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.aiTag.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.price.includes(searchQuery)
@@ -1502,105 +1517,29 @@ const SearchAgentView: React.FC = () => {
   );
 };
 
-const ContractAgentView: React.FC = () => {
+const ContractAgentView: React.FC<{ user: any }> = ({ user }) => {
   const [selectedContractId, setSelectedContractId] = useState<string | null>(null);
-  
-  const contracts: Contract[] = [
-    {
-      id: '1',
-      clientName: 'Sarah Klein',
-      title: 'Purchase Agreement - 1234 Coast Hwy',
-      status: 'Draft',
-      lastUpdated: '2 hours ago',
-      content: (
-        <div className="rltr-contract-text">
-          <p><strong>CALIFORNIA RESIDENTIAL PURCHASE AGREEMENT</strong></p>
-          <br />
-          <p>
-            This Agreement is made on November 20, 2025, by and between <span className="rltr-highlight">Sarah Klein</span> (Buyer) and <span className="rltr-highlight">Robert Smith</span> (Seller).
-          </p>
-          <br />
-          <p>
-            1. PROPERTY: The real property to be acquired is described as 1234 Coast Hwy, Encinitas, CA 92024.
-          </p>
-          <br />
-          <p>
-            2. PURCHASE PRICE: The purchase price shall be <span className="rltr-highlight">$895,000.00</span>.
-          </p>
-          <br />
-          <p>
-            3. CLOSE OF ESCROW: Close of escrow shall occur on or before December 20, 2025.
-          </p>
-        </div>
-      ),
-      checklist: [
-        { id: 1, text: 'Property details', completed: true },
-        { id: 2, text: 'Buyer details', completed: true },
-        { id: 3, text: 'Disclosures', completed: false },
-        { id: 4, text: 'Signature', completed: false },
-      ]
-    },
-    {
-      id: '2',
-      clientName: 'Michael Chen',
-      title: 'Listing Agreement - 567 Neptune Ave',
-      status: 'Sent',
-      lastUpdated: '1 day ago',
-      content: (
-        <div className="rltr-contract-text">
-          <p><strong>RESIDENTIAL LISTING AGREEMENT</strong></p>
-          <br />
-          <p>
-            This Agreement is entered into by <span className="rltr-highlight">Michael Chen</span> (Seller) and RLTR Brokerage.
-          </p>
-          <br />
-          <p>
-            1. EXCLUSIVE RIGHT TO SELL: Seller hereby employs and grants Broker the exclusive and irrevocable right to sell or exchange the real property described as 567 Neptune Ave.
-          </p>
-          <br />
-          <p>
-            2. LISTING PRICE: The listing price shall be <span className="rltr-highlight">$1,250,000.00</span>.
-          </p>
-        </div>
-      ),
-      checklist: [
-        { id: 1, text: 'Listing terms', completed: true },
-        { id: 2, text: 'Commission rate', completed: true },
-        { id: 3, text: 'Seller signature', completed: false },
-        { id: 4, text: 'MLS entry', completed: false },
-      ]
-    },
-    {
-      id: '3',
-      clientName: 'Emily Davis',
-      title: 'Counter Offer No. 1',
-      status: 'Signed',
-      lastUpdated: '3 days ago',
-      content: (
-        <div className="rltr-contract-text">
-          <p><strong>SELLER COUNTER OFFER No. 1</strong></p>
-          <br />
-          <p>
-            This is a counter offer to the Purchase Agreement dated Nov 15, 2025.
-          </p>
-          <br />
-          <p>
-            1. PRICE: The purchase price shall be increased to <span className="rltr-highlight">$760,000.00</span>.
-          </p>
-          <br />
-          <p>
-            2. ALL OTHER TERMS: All other terms and conditions of the Purchase Agreement remain unchanged.
-          </p>
-        </div>
-      ),
-      checklist: [
-        { id: 1, text: 'Price adjustment', completed: true },
-        { id: 2, text: 'Buyer signature', completed: true },
-        { id: 3, text: 'Seller signature', completed: true },
-        { id: 4, text: 'Escrow opened', completed: true },
-      ]
-    }
-  ];
+  const [contracts, setContracts] = useState<Contract[]>([]);
+
+  React.useEffect(() => {
+    if (!user) return;
+    const fetchContracts = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.from('contracts').select('*');
+      if (data) {
+        setContracts(data.map((c: any) => ({
+          id: c.id,
+          clientName: c.client_name,
+          title: c.title,
+          status: c.status,
+          lastUpdated: new Date(c.last_updated).toLocaleDateString(),
+          content: c.content,
+          checklist: c.checklist || []
+        })));
+      }
+    };
+    fetchContracts();
+  }, [user]);
 
   const [activeChecklist, setActiveChecklist] = useState<ChecklistItem[]>([]);
   const [newItemText, setNewItemText] = useState('');
@@ -1610,26 +1549,65 @@ const ContractAgentView: React.FC = () => {
     if (selectedContractId) {
       const contract = contracts.find(c => c.id === selectedContractId);
       if (contract) {
-        setActiveChecklist(contract.checklist);
+        setActiveChecklist(contract.checklist || []);
       }
     }
-  }, [selectedContractId]);
+  }, [selectedContractId, contracts]);
+
+  const updateContractChecklist = async (contractId: string, newChecklist: ChecklistItem[]) => {
+    const supabase = createClient();
+    await supabase.from('contracts').update({ checklist: newChecklist }).eq('id', contractId);
+    
+    setContracts(contracts.map(c => c.id === contractId ? { ...c, checklist: newChecklist } : c));
+  };
 
   const toggleItem = (id: number) => {
-    setActiveChecklist(activeChecklist.map(item => 
+    if (!selectedContractId) return;
+    const newChecklist = activeChecklist.map(item => 
       item.id === id ? { ...item, completed: !item.completed } : item
-    ));
+    );
+    setActiveChecklist(newChecklist);
+    updateContractChecklist(selectedContractId, newChecklist);
   };
 
   const handleAddItem = () => {
-    if (!newItemText.trim()) return;
+    if (!newItemText.trim() || !selectedContractId) return;
     const newItem: ChecklistItem = {
       id: Date.now(),
       text: newItemText,
       completed: false
     };
-    setActiveChecklist([...activeChecklist, newItem]);
+    const newChecklist = [...activeChecklist, newItem];
+    setActiveChecklist(newChecklist);
     setNewItemText('');
+    updateContractChecklist(selectedContractId, newChecklist);
+  };
+
+  const handleAddContract = async () => {
+    if (!user) return;
+    const newContract = {
+      user_id: user.id,
+      client_name: 'New Client',
+      title: 'Untitled Contract',
+      status: 'Draft',
+      content: '<p>Contract content goes here...</p>',
+      checklist: []
+    };
+    const supabase = createClient();
+    const { data } = await supabase.from('contracts').insert(newContract).select().single();
+    if (data) {
+      const c: Contract = {
+        id: data.id,
+        clientName: data.client_name,
+        title: data.title,
+        status: data.status,
+        lastUpdated: new Date(data.last_updated).toLocaleDateString(),
+        content: data.content,
+        checklist: data.checklist || []
+      };
+      setContracts([...contracts, c]);
+      setSelectedContractId(c.id);
+    }
   };
 
   const selectedContract = contracts.find(c => c.id === selectedContractId);
@@ -1637,12 +1615,13 @@ const ContractAgentView: React.FC = () => {
   if (!selectedContract) {
     return (
       <div>
-        <div className="rltr-search-container" style={{ maxWidth: '100%' }}>
+        <div className="rltr-search-container" style={{ maxWidth: '100%', display: 'flex', justifyContent: 'space-between' }}>
           <input 
             type="text" 
             className="rltr-search-input" 
             placeholder="Search contracts..." 
           />
+          <button className="rltr-btn" onClick={handleAddContract}>New Contract</button>
         </div>
         
         <div className="rltr-contract-grid">
@@ -1680,7 +1659,7 @@ const ContractAgentView: React.FC = () => {
         <div className="rltr-panel">
           <div className="rltr-panel-header">{selectedContract.title}</div>
           <div className="rltr-panel-content">
-            {selectedContract.content}
+            <div dangerouslySetInnerHTML={{ __html: selectedContract.content }} />
           </div>
         </div>
         
@@ -1718,87 +1697,109 @@ const ContractAgentView: React.FC = () => {
   );
 };
 
-const WorkflowAgentView: React.FC = () => {
-  const [workflows, setWorkflows] = useState<Workflow[]>([
-    {
-      id: '1',
-      name: 'New Lead Sequence',
-      nodes: [
-        { id: '1', title: 'Trigger: New lead', desc: 'Source: Website form' },
-        { id: '2', title: 'Send intro email', desc: 'Template: Welcome' },
-        { id: '3', title: 'Wait 2 days', desc: 'Delay' },
-        { id: '4', title: 'If no response', desc: 'Action: Send SMS' },
-      ]
-    },
-    {
-      id: '2',
-      name: 'Contract Follow-up',
-      nodes: [
-        { id: '1', title: 'Trigger: Contract Sent', desc: 'Source: DocuSign' },
-        { id: '2', title: 'Wait 24 hours', desc: 'Check signature status' },
-        { id: '3', title: 'If not signed', desc: 'Send reminder email' },
-      ]
-    }
-  ]);
-  
-  const [activeWorkflowId, setActiveWorkflowId] = useState<string>('1');
+const WorkflowAgentView: React.FC<{ user: any }> = ({ user }) => {
+  const [workflows, setWorkflows] = useState<Workflow[]>([]);
+  const [activeWorkflowId, setActiveWorkflowId] = useState<string | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
-  const activeWorkflow = workflows.find(w => w.id === activeWorkflowId) || workflows[0];
-
-  const handleAddWorkflow = () => {
-    const newWorkflow: Workflow = {
-      id: Date.now().toString(),
-      name: 'Untitled Workflow',
-      nodes: [
-        { id: '1', title: 'Trigger: Start', desc: 'Manual trigger' }
-      ]
+  React.useEffect(() => {
+    if (!user) return;
+    const fetchWorkflows = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.from('workflows').select('*');
+      if (data && data.length > 0) {
+        const mapped = data.map((w: any) => ({
+          id: w.id,
+          name: w.name,
+          nodes: w.nodes
+        }));
+        setWorkflows(mapped);
+        setActiveWorkflowId(mapped[0].id);
+      }
     };
-    setWorkflows([...workflows, newWorkflow]);
-    setActiveWorkflowId(newWorkflow.id);
-    setSelectedNodeId(null);
+    fetchWorkflows();
+  }, [user]);
+
+  const activeWorkflow = workflows.find(w => w.id === activeWorkflowId) || (workflows.length > 0 ? workflows[0] : null);
+
+  const updateWorkflowInDb = async (workflow: Workflow) => {
+    const supabase = createClient();
+    await supabase.from('workflows').update({ nodes: workflow.nodes, name: workflow.name }).eq('id', workflow.id);
+  };
+
+  const handleAddWorkflow = async () => {
+    if (!user) return;
+    const newWorkflowPayload = {
+      user_id: user.id,
+      name: 'Untitled Workflow',
+      nodes: [{ id: '1', title: 'Trigger: Start', desc: 'Manual trigger' }]
+    };
+    const supabase = createClient();
+    const { data } = await supabase.from('workflows').insert(newWorkflowPayload).select().single();
+    
+    if (data) {
+      const w = { id: data.id, name: data.name, nodes: data.nodes };
+      setWorkflows([...workflows, w]);
+      setActiveWorkflowId(w.id);
+      setSelectedNodeId(null);
+    }
   };
 
   const handleAddNode = () => {
+    if (!activeWorkflow) return;
     const newNode = {
       id: Date.now().toString(),
       title: 'New Step',
       desc: 'Description'
     };
     
-    setWorkflows(workflows.map(w => {
-      if (w.id === activeWorkflowId) {
-        return { ...w, nodes: [...w.nodes, newNode] };
-      }
-      return w;
-    }));
+    const updatedWorkflow = { ...activeWorkflow, nodes: [...activeWorkflow.nodes, newNode] };
+    setWorkflows(workflows.map(w => w.id === activeWorkflowId ? updatedWorkflow : w));
     setSelectedNodeId(newNode.id);
+    updateWorkflowInDb(updatedWorkflow);
   };
 
   const handleDeleteNode = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setWorkflows(workflows.map(w => {
-      if (w.id === activeWorkflowId) {
-        return { ...w, nodes: w.nodes.filter(n => n.id !== id) };
-      }
-      return w;
-    }));
+    if (!activeWorkflow) return;
+    const updatedWorkflow = { ...activeWorkflow, nodes: activeWorkflow.nodes.filter(n => n.id !== id) };
+    
+    setWorkflows(workflows.map(w => w.id === activeWorkflowId ? updatedWorkflow : w));
     if (selectedNodeId === id) setSelectedNodeId(null);
+    updateWorkflowInDb(updatedWorkflow);
   };
 
   const handleUpdateNode = (id: string, field: 'title' | 'desc', value: string) => {
-    setWorkflows(workflows.map(w => {
-      if (w.id === activeWorkflowId) {
-        return {
-          ...w,
-          nodes: w.nodes.map(n => n.id === id ? { ...n, [field]: value } : n)
-        };
-      }
-      return w;
-    }));
+    if (!activeWorkflow) return;
+    const updatedNodes = activeWorkflow.nodes.map(n => n.id === id ? { ...n, [field]: value } : n);
+    const updatedWorkflow = { ...activeWorkflow, nodes: updatedNodes };
+
+    setWorkflows(workflows.map(w => w.id === activeWorkflowId ? updatedWorkflow : w));
+    updateWorkflowInDb(updatedWorkflow);
   };
 
+  if (!activeWorkflow) {
+    return (
+      <div className="rltr-workflow-view">
+        <div className="rltr-workflow-list">
+           <div className="rltr-workflow-list-header">
+            <span className="rltr-workflow-list-title">Workflows</span>
+            <button className="rltr-add-workflow-btn" onClick={handleAddWorkflow} title="New Workflow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+          </div>
+          <div style={{ padding: '12px', color: '#999', fontSize: '14px' }}>No workflows found. Create one to get started.</div>
+        </div>
+        <div className="rltr-workflow-canvas"></div>
+      </div>
+    );
+  }
+
   const selectedNode = activeWorkflow.nodes.find(n => n.id === selectedNodeId);
+
 
   return (
     <div className="rltr-workflow-view">
@@ -1969,7 +1970,45 @@ const RightPanel: React.FC<RightPanelProps> = ({ activeItem }) => {
   );
 };
 
-const DashboardHomeView: React.FC = () => {
+const DashboardHomeView: React.FC<{ user: any }> = ({ user }) => {
+  const [metrics, setMetrics] = useState({
+    activeDealsValue: '$0M',
+    activeDealsCount: 0,
+    pipelineValue: '$0M',
+    pipelineCount: 0,
+    tasksDue: 0,
+    highPriorityTasks: 0
+  });
+
+  React.useEffect(() => {
+    if (!user) return;
+    const fetchMetrics = async () => {
+      const supabase = createClient();
+      
+      // Active Deals (Under Contract)
+      const { data: activeDeals } = await supabase.from('deals').select('value').eq('stage', 'Under Contract');
+      const activeVal = activeDeals?.reduce((sum, d) => sum + Number(d.value), 0) || 0;
+      
+      // Pipeline (New + Negotiation)
+      const { data: pipelineDeals } = await supabase.from('deals').select('value').in('stage', ['New', 'Negotiation']);
+      const pipelineVal = pipelineDeals?.reduce((sum, d) => sum + Number(d.value), 0) || 0;
+      
+      // Tasks
+      const { data: tasks } = await supabase.from('tasks').select('*').eq('completed', false);
+      const highPriority = tasks?.filter((t: any) => t.priority === 'High').length || 0;
+
+      setMetrics({
+        activeDealsValue: `$${(activeVal / 1000000).toFixed(1)}M`,
+        activeDealsCount: activeDeals?.length || 0,
+        pipelineValue: `$${(pipelineVal / 1000000).toFixed(1)}M`,
+        pipelineCount: pipelineDeals?.length || 0,
+        tasksDue: tasks?.length || 0,
+        highPriorityTasks: highPriority
+      });
+    };
+    fetchMetrics();
+  }, [user]);
+
   return (
     <div>
       <div className="rltr-dashboard-grid">
@@ -1978,8 +2017,8 @@ const DashboardHomeView: React.FC = () => {
             <span className="rltr-metric-title">Active Deals</span>
             <span className="rltr-metric-trend positive">↑ 12%</span>
           </div>
-          <div className="rltr-metric-value">$4.2M</div>
-          <div className="rltr-metric-sub">3 closings this month</div>
+          <div className="rltr-metric-value">{metrics.activeDealsValue}</div>
+          <div className="rltr-metric-sub">{metrics.activeDealsCount} closings this month</div>
         </div>
         
         <div className="rltr-metric-card">
@@ -1987,8 +2026,8 @@ const DashboardHomeView: React.FC = () => {
             <span className="rltr-metric-title">Pipeline Value</span>
             <span className="rltr-metric-trend positive">↑ 5%</span>
           </div>
-          <div className="rltr-metric-value">$12.8M</div>
-          <div className="rltr-metric-sub">8 active opportunities</div>
+          <div className="rltr-metric-value">{metrics.pipelineValue}</div>
+          <div className="rltr-metric-sub">{metrics.pipelineCount} active opportunities</div>
         </div>
 
         <div className="rltr-metric-card">
@@ -2005,8 +2044,8 @@ const DashboardHomeView: React.FC = () => {
             <span className="rltr-metric-title">Tasks Due</span>
             <span className="rltr-metric-trend">Today</span>
           </div>
-          <div className="rltr-metric-value">12</div>
-          <div className="rltr-metric-sub">4 high priority</div>
+          <div className="rltr-metric-value">{metrics.tasksDue}</div>
+          <div className="rltr-metric-sub">{metrics.highPriorityTasks} high priority</div>
         </div>
       </div>
 
@@ -2041,14 +2080,27 @@ const DashboardHomeView: React.FC = () => {
   );
 };
 
-const ClientsView: React.FC = () => {
-  const clients: Client[] = [
-    { id: '1', name: 'Sarah Klein', email: 'sarah.k@example.com', phone: '(555) 123-4567', status: 'Active', lastContact: '2 hours ago' },
-    { id: '2', name: 'Michael Chen', email: 'm.chen@example.com', phone: '(555) 987-6543', status: 'Active', lastContact: '1 day ago' },
-    { id: '3', name: 'James Wilson', email: 'j.wilson@example.com', phone: '(555) 456-7890', status: 'Lead', lastContact: 'Yesterday' },
-    { id: '4', name: 'Emily Davis', email: 'emily.d@example.com', phone: '(555) 789-0123', status: 'Past', lastContact: '3 days ago' },
-    { id: '5', name: 'Robert Smith', email: 'r.smith@example.com', phone: '(555) 321-6549', status: 'Active', lastContact: '5 days ago' },
-  ];
+const ClientsView: React.FC<{ user: any }> = ({ user }) => {
+  const [clients, setClients] = useState<Client[]>([]);
+
+  React.useEffect(() => {
+    if (!user) return;
+    const fetchClients = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.from('clients').select('*');
+      if (data) {
+        setClients(data.map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          email: c.email,
+          phone: c.phone,
+          status: c.status,
+          lastContact: new Date(c.last_contact).toLocaleDateString()
+        })));
+      }
+    };
+    fetchClients();
+  }, [user]);
 
   return (
     <div>
@@ -2092,13 +2144,26 @@ const ClientsView: React.FC = () => {
   );
 };
 
-const DealsView: React.FC = () => {
-  const deals: Deal[] = [
-    { id: '1', title: '1234 Coast Hwy', value: '$895,000', stage: 'Under Contract', clientName: 'Sarah Klein' },
-    { id: '2', title: '567 Neptune Ave', value: '$1,250,000', stage: 'Negotiation', clientName: 'Michael Chen' },
-    { id: '3', title: '890 Vulcan Ave', value: '$750,000', stage: 'New', clientName: 'James Wilson' },
-    { id: '4', title: '432 2nd St', value: '$925,000', stage: 'Closed', clientName: 'Emily Davis' },
-  ];
+const DealsView: React.FC<{ user: any }> = ({ user }) => {
+  const [deals, setDeals] = useState<Deal[]>([]);
+
+  React.useEffect(() => {
+    if (!user) return;
+    const fetchDeals = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.from('deals').select('*');
+      if (data) {
+        setDeals(data.map((d: any) => ({
+          id: d.id,
+          title: d.title,
+          value: d.value ? `$${Number(d.value).toLocaleString()}` : '$0',
+          stage: d.stage,
+          clientName: d.client_name
+        })));
+      }
+    };
+    fetchDeals();
+  }, [user]);
 
   const stages = ['New', 'Negotiation', 'Under Contract', 'Closed'];
 
@@ -2123,17 +2188,36 @@ const DealsView: React.FC = () => {
   );
 };
 
-const TasksView: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: '1', title: 'Call Sarah about inspection', dueDate: 'Today', priority: 'High', completed: false },
-    { id: '2', title: 'Send disclosure packet to Michael', dueDate: 'Today', priority: 'High', completed: false },
-    { id: '3', title: 'Follow up with James (Lead)', dueDate: 'Tomorrow', priority: 'Medium', completed: false },
-    { id: '4', title: 'Schedule photography for 890 Vulcan', dueDate: 'Fri, Nov 24', priority: 'Medium', completed: true },
-    { id: '5', title: 'Update CRM contacts', dueDate: 'Next Week', priority: 'Low', completed: false },
-  ]);
+const TasksView: React.FC<{ user: any }> = ({ user }) => {
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-  const toggleTask = (id: string) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+  React.useEffect(() => {
+    if (!user) return;
+    const fetchTasks = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.from('tasks').select('*').order('due_date', { ascending: true });
+      if (data) {
+        setTasks(data.map((t: any) => ({
+          id: t.id,
+          title: t.title,
+          dueDate: new Date(t.due_date).toLocaleDateString(),
+          priority: t.priority,
+          completed: t.completed
+        })));
+      }
+    };
+    fetchTasks();
+  }, [user]);
+
+  const toggleTask = async (id: string) => {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    
+    const newCompleted = !task.completed;
+    setTasks(tasks.map(t => t.id === id ? { ...t, completed: newCompleted } : t));
+    
+    const supabase = createClient();
+    await supabase.from('tasks').update({ completed: newCompleted }).eq('id', id);
   };
 
   return (
@@ -2160,7 +2244,7 @@ const TasksView: React.FC = () => {
   );
 };
 
-const CalendarView: React.FC = () => {
+const CalendarView: React.FC<{ user: any }> = ({ user }) => {
   const days = Array.from({ length: 35 }, (_, i) => i + 1); // Mock calendar days
   const events: CalendarEvent[] = [
     { id: '1', title: 'Inspection: 1234 Coast', date: '20', time: '10:00 AM', type: 'Meeting' },
@@ -2201,22 +2285,20 @@ const CalendarView: React.FC = () => {
   );
 };
 
-const SettingsView: React.FC = () => {
+const SettingsView: React.FC<{ user: any }> = ({ user }) => {
   return (
     <div className="rltr-settings-form">
       <div className="rltr-settings-section">
         <div className="rltr-settings-title">Profile</div>
         <div className="rltr-form-group">
           <label className="rltr-label">Full Name</label>
-          <input type="text" className="rltr-input" defaultValue="Alex Realtor" />
+          <input type="text" className="rltr-input" defaultValue={user?.user_metadata?.full_name || "Alex Realtor"} />
         </div>
         <div className="rltr-form-group">
           <label className="rltr-label">Email</label>
-          <input type="email" className="rltr-input" defaultValue="alex@rltr.com" />
+          <input type="email" className="rltr-input" defaultValue={user?.email || "alex@rltr.com"} />
         </div>
-      </div>
-      
-      <div className="rltr-settings-section">
+      </div>      <div className="rltr-settings-section">
         <div className="rltr-settings-title">Notifications</div>
         <div className="rltr-task-item" style={{ border: 'none', padding: '8px 0' }}>
           <input type="checkbox" className="rltr-task-checkbox" defaultChecked />
@@ -2390,27 +2472,56 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isOpen, onClose, activeItem }
 export default function DashboardPage() {
   const [activeItem, setActiveItem] = useState<NavItem>('Dashboard');
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    const getUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      setLoading(false);
+    };
+    getUser();
+  }, []);
 
   const renderContent = () => {
+    if (loading) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          Loading...
+        </div>
+      );
+    }
+
+    if (!user) {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '16px' }}>
+          <div style={{ fontSize: '18px', color: 'var(--text-secondary)' }}>Please log in to access the dashboard.</div>
+          <a href="/login" className="rltr-btn" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '36px' }}>Log In</a>
+        </div>
+      );
+    }
+
     switch (activeItem) {
       case 'Dashboard':
-        return <DashboardHomeView />;
+        return <DashboardHomeView user={user} />;
       case 'Search Agent':
-        return <SearchAgentView />;
+        return <SearchAgentView user={user} />;
       case 'Contract Agent':
-        return <ContractAgentView />;
+        return <ContractAgentView user={user} />;
       case 'Workflow Agent':
-        return <WorkflowAgentView />;
+        return <WorkflowAgentView user={user} />;
       case 'Clients':
-        return <ClientsView />;
+        return <ClientsView user={user} />;
       case 'Deals':
-        return <DealsView />;
+        return <DealsView user={user} />;
       case 'Tasks':
-        return <TasksView />;
+        return <TasksView user={user} />;
       case 'Calendar':
-        return <CalendarView />;
+        return <CalendarView user={user} />;
       case 'Settings':
-        return <SettingsView />;
+        return <SettingsView user={user} />;
       default:
         return (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#999' }}>
