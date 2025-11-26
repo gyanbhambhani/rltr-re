@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
+import { useSearchPalette } from '@/components/search/SearchProvider'
 
 interface TopBarProps {
   title?: string
@@ -12,6 +13,7 @@ interface TopBarProps {
 export function TopBar({ title, action }: TopBarProps) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const { open } = useSearchPalette()
 
   useEffect(() => {
     async function fetchUser() {
@@ -35,6 +37,15 @@ export function TopBar({ title, action }: TopBarProps) {
       </div>
       
       <div className="flex items-center gap-4">
+        <button
+          type="button"
+          onClick={open}
+          className="hidden md:flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+        >
+          <span>Search workspace</span>
+          <span className="text-xs font-semibold text-slate-400">⌘ K</span>
+        </button>
+
         {action && <div>{action}</div>}
         
         {loading ? (
