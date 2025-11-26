@@ -32,14 +32,16 @@ export function AppSidebar() {
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user) {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('integration_connections')
           .select('*')
           .eq('user_id', user.id)
           .eq('type', 'mls')
-          .single()
+          .maybeSingle()
         
-        setMlsStatus(data)
+        if (!error && data) {
+          setMlsStatus(data)
+        }
       }
       setLoading(false)
     }

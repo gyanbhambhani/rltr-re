@@ -65,7 +65,9 @@ export default async function ContactDetailPage({
         title={`${contact.first_name} ${contact.last_name}`}
         description={contact.email || 'Contact details'}
         action={
-          <Button variant="outline">Edit Contact</Button>
+          <Button variant="outline" disabled>
+            Edit Contact
+          </Button>
         }
       />
 

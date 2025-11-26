@@ -1,15 +1,14 @@
 import { PageHeader } from '@/app/components/ui/PageHeader'
 import { Card, CardContent, CardHeader } from '@/app/components/ui/Card'
 import { StatTile } from '@/app/components/ui/StatTile'
-import { Badge } from '@/app/components/ui/Badge'
 import { Button } from '@/app/components/ui/Button'
-import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner'
 import { EmptyState } from '@/app/components/ui/EmptyState'
 import { getAllTransactions, getTransactionsByStage } from '@/lib/supabase/queries/transactions'
 import { getTasksByTransaction } from '@/lib/supabase/queries/tasks'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { format } from 'date-fns'
+import { TodayTasks } from './components/TodayTasks'
 
 type TransactionStage = 'lead' | 'offer_drafting' | 'offer_submitted' | 'in_escrow' | 'closed' | 'dead'
 
@@ -60,9 +59,6 @@ async function getTodayTasks() {
 export default async function DashboardPage() {
   const transactions = await getAllTransactions()
   const todayTasks = await getTodayTasks()
-  
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
   
   // Get transaction counts by stage
   const stageCounts = await Promise.all(
@@ -144,48 +140,7 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Today's Tasks */}
-        <Card>
-          <CardHeader>
-            <h2 className="text-lg font-semibold text-slate-900">Today's Tasks</h2>
-          </CardHeader>
-          <CardContent>
-            {todayTasks.length === 0 ? (
-              <EmptyState
-                title="No tasks due today"
-                description="You're all caught up! Check back tomorrow for new tasks."
-              />
-            ) : (
-              <div className="space-y-3">
-                {todayTasks.slice(0, 5).map((task: any) => (
-                  <div
-                    key={task.id}
-                    className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg"
-                  >
-                    <input
-                      type="checkbox"
-                      className="mt-1"
-                      defaultChecked={task.status === 'done'}
-                    />
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-slate-900">{task.title}</div>
-                      <div className="text-xs text-slate-600 mt-1">
-                        <Link
-                          href={`/transactions/${task.transaction.id}`}
-                          className="hover:underline"
-                        >
-                          {task.transaction.property?.address || 'Transaction'}
-                        </Link>
-                      </div>
-                    </div>
-                    <Badge variant={stageColors[task.transaction.stage]}>
-                      {stageLabels[task.transaction.stage]}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <TodayTasks initialTasks={todayTasks} />
 
         {/* Recent Activity */}
         <Card>

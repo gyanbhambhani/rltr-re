@@ -2,10 +2,33 @@
 
 import Link from 'next/link';
 import Navigation from './components/Navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
 
 export default function Home() {
   const [flippedCard, setFlippedCard] = useState<number | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    // Get initial user
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const features = [
     {
@@ -95,23 +118,38 @@ export default function Home() {
               agents ready to transform their workflow.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link 
-                href="/signup"
-                className="inline-flex items-center px-5 py-3 bg-black text-white text-sm 
-                font-medium hover:bg-black/90 transition-all shadow-sm"
-              >
-                Join pilot program
-                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
+              {!loading && user ? (
                 <Link 
-                href="mailto:hello@rltr.com"
-                className="inline-flex items-center px-5 py-3 bg-white text-black text-sm 
-                font-medium border border-black/10 hover:border-black/20 transition-all shadow-sm"
+                  href="/dashboard"
+                  className="inline-flex items-center px-5 py-3 bg-black text-white text-sm 
+                  font-medium hover:bg-black/90 transition-all shadow-sm"
                 >
-                Request demo
+                  Go to Dashboard
+                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
+              ) : (
+                <>
+                  <Link 
+                    href="/signup"
+                    className="inline-flex items-center px-5 py-3 bg-black text-white text-sm 
+                    font-medium hover:bg-black/90 transition-all shadow-sm"
+                  >
+                    Join pilot program
+                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                  <Link 
+                    href="mailto:hello@rltr.com"
+                    className="inline-flex items-center px-5 py-3 bg-white text-black text-sm 
+                    font-medium border border-black/10 hover:border-black/20 transition-all shadow-sm"
+                  >
+                    Request demo
+                  </Link>
+                </>
+              )}
             </div>
             <div className="flex items-center gap-6 mt-8 text-sm text-black/50">
               <div className="flex items-center gap-1.5">
@@ -241,23 +279,38 @@ export default function Home() {
             transform their practice.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Link 
-              href="/signup"
-              className="inline-flex items-center px-6 py-3.5 bg-white text-black text-sm 
-              font-medium hover:bg-white/90 transition-all shadow-lg"
-            >
-              Apply for pilot
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-            <Link 
-              href="mailto:hello@rltr.com"
-              className="inline-flex items-center px-6 py-3.5 border border-white/20 
-              text-white text-sm font-medium hover:border-white/40 transition-all"
-            >
-              Contact us
-            </Link>
+            {!loading && user ? (
+              <Link 
+                href="/dashboard"
+                className="inline-flex items-center px-6 py-3.5 bg-white text-black text-sm 
+                font-medium hover:bg-white/90 transition-all shadow-lg"
+              >
+                Go to Dashboard
+                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  href="/signup"
+                  className="inline-flex items-center px-6 py-3.5 bg-white text-black text-sm 
+                  font-medium hover:bg-white/90 transition-all shadow-lg"
+                >
+                  Apply for pilot
+                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+                <Link 
+                  href="mailto:hello@rltr.com"
+                  className="inline-flex items-center px-6 py-3.5 border border-white/20 
+                  text-white text-sm font-medium hover:border-white/40 transition-all"
+                >
+                  Contact us
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
